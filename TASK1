@@ -1,0 +1,44 @@
+import requests
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"
+CITY = "London"
+BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?"
+
+params = {
+    "q": CITY,
+    "appid": API_KEY,
+    "units": "metric",
+    "cnt": 40
+}
+
+response = requests.get(BASE_URL, params=params)
+data = response.json()
+
+dates = []
+temperatures = []
+humidities = []
+pressures = []
+
+for entry in data["list"]:
+    dates.append(entry["dt_txt"])
+    temperatures.append(entry["main"]["temp"])
+    humidities.append(entry["main"]["humidity"])
+    pressures.append(entry["main"]["pressure"])
+
+df = pd.DataFrame({
+    "Date": pd.to_datetime(dates),
+    "Temperature": temperatures,
+    "Humidity": humidities,
+    "Pressure": pressures
+})
+
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.tight_layout(pad=6.0)
+
+sns.lineplot(x='Date', y='Temperature', data=df, ax=axes[0, 0], color='tab:blue')
+axes[0, 0].set_title('Temperature Over Time')
+
+sns.lineplot(x='Date
